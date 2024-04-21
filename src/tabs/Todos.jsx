@@ -1,9 +1,11 @@
-import { Form, Text } from 'components';
+import { Form, Text, TodoList } from 'components';
 import { nanoid } from 'nanoid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Todos = () => {
-  const [todo, setTodo] = useState([]);
+  const [todo, setTodo] = useState(() => {
+    return JSON.parse(window.localStorage.getItem('todos')) || [];
+  });
 
   const addTodo = text => {
     console.log(text);
@@ -11,11 +13,18 @@ export const Todos = () => {
       return [...prewState, { text, id: nanoid() }];
     });
   };
+  useEffect(() => {
+    window.localStorage.setItem('todos', JSON.stringify(todo));
+  }, [todo]);
 
   return (
     <>
       <Form addTodo={addTodo} />
-      <Text textAlign="center">There are no any todos ...</Text>
+      {todo.length > 0 ? (
+        <TodoList todos={todo} />
+      ) : (
+        <Text textAlign="center">There are no any todos ...</Text>
+      )}
     </>
   );
 };
